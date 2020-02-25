@@ -1,29 +1,18 @@
 package sample;
 
 import javafx.animation.AnimationTimer;
-import javafx.animation.PathTransition;
-import javafx.animation.ScaleTransition;
-import javafx.animation.TranslateTransition;
 import javafx.application.Application;
-import javafx.collections.FXCollections;
-import javafx.collections.ObservableList;
-import javafx.geometry.NodeOrientation;
-import javafx.geometry.Orientation;
 import javafx.scene.Group;
-import javafx.scene.Node;
 import javafx.scene.Scene;
 import javafx.scene.control.Label;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyEvent;
 import javafx.scene.paint.Color;
-import javafx.scene.shape.*;
+import javafx.scene.shape.Rectangle;
 import javafx.stage.Stage;
-import javafx.util.Duration;
 
 import java.util.Random;
 import java.util.concurrent.TimeUnit;
-
-import static javafx.scene.layout.Region.USE_COMPUTED_SIZE;
 
 public class Main extends Application {
     private Group rectangles = new Group();
@@ -46,8 +35,8 @@ public class Main extends Application {
             Random random = new Random();
             double lastX = rec.getX();
             double lastY = rec.getY();
-            double foodX = random.nextInt(500);
-            double foodY = random.nextInt(500);
+            //double foodX = random.nextInt(500);
+            //double foodY = random.nextInt(500);
             int speed = 500, size = 2;
             boolean pressedW = false, pressedS = false, pressedA = false, pressedD = false;
 
