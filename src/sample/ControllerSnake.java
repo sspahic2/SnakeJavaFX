@@ -2,8 +2,11 @@ package sample;
 
 import javafx.animation.AnimationTimer;
 import javafx.fxml.FXML;
+import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
 import javafx.scene.Group;
+import javafx.scene.Parent;
+import javafx.scene.Scene;
 import javafx.scene.control.Label;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyEvent;
@@ -12,19 +15,20 @@ import javafx.scene.paint.Color;
 import javafx.scene.shape.Rectangle;
 import javafx.stage.Stage;
 
+import java.io.IOException;
 import java.net.URL;
 import java.util.Random;
 import java.util.ResourceBundle;
 import java.util.concurrent.TimeUnit;
 
-public class Controller implements Initializable {
+public class ControllerSnake implements Initializable {
     @FXML
     AnchorPane anchorPane;
     private Group rectangles = new Group();
     private Group group = new Group();
     private Group circles = new Group();
     private Stage primaryStage;
-    Controller(Stage stage) {
+    ControllerSnake(Stage stage) {
         primaryStage = stage;
     }
 
@@ -41,11 +45,11 @@ public class Controller implements Initializable {
             group.getChildren().add(lab);
             group.getChildren().add(circles);
             new AnimationTimer() {
+                int choose = 0;
                 Random random = new Random();
                 double lastX = rec.getX();
                 double lastY = rec.getY();
-                int speed = 140, size = 15;
-                boolean pressedW = false, pressedS = false, pressedA = false, pressedD = false;
+                int speed = 140, size = 3;
 
                 @Override
                 public void handle(long l) {
@@ -56,68 +60,60 @@ public class Controller implements Initializable {
                     tempRectangle.setY(lastY);
                     primaryStage.addEventFilter(KeyEvent.KEY_PRESSED, keyEvent -> {
                         if (keyEvent.getCode() == KeyCode.S) {
-                            if (!pressedW) {
-                                pressedS = true;
-                                pressedW = false;
-                                pressedA = false;
-                                pressedD = false;
+
+
+                            if(choose != 3) {
+                                choose = 1;
                             }
 
-                            if(size == 2 && pressedW) {
-                                pressedS = true;
-                            }
                         } else if (keyEvent.getCode() == KeyCode.W) {
-                            if (!pressedS) {
-                                pressedW = true;
-                                pressedD = false;
-                                pressedA = false;
-                                pressedS = false;
+                            if(choose != 1) {
+                                choose = 3;
                             }
 
-                            if(size == 2 && pressedS) {
-                                pressedW = true;
-                            }
                         } else if (keyEvent.getCode() == KeyCode.D) {
-                            if(!pressedA) {
-                                pressedD = true;
-                                pressedW = false;
-                                pressedS = false;
-                                pressedA = false;
+
+                            if(choose != 2) {
+                                choose = 4;
                             }
 
-                            if(size == 2 && pressedA) {
-                                pressedD = true;
-                            }
+
                         } else if (keyEvent.getCode() == KeyCode.A) {
-                            if(!pressedD) {
-                                pressedA = true;
-                                pressedW = false;
-                                pressedS = false;
-                                pressedD = false;
+                            if(choose != 4) {
+                                choose = 2;
                             }
 
-                            if(size == 2 && pressedD) {
-                                pressedA = true;
-                            }
                         }
                     });
 
-                    if(isInsideItself(rectangles, tempRectangle) && (pressedA || pressedS || pressedD || pressedW)
-                            && rectangles.getChildren().size() > 10) {
+                    if(isInsideItself(rectangles, tempRectangle) && choose != 0
+                            && rectangles.getChildren().size() > 3) {
                         lab.setText("GAME OVER");
                         try {
-                            TimeUnit.MILLISECONDS.sleep(2000);
+                            TimeUnit.MILLISECONDS.sleep(1000);
                         } catch (InterruptedException e) {
                             e.printStackTrace();
                         }
                         Stage s = (Stage) primaryStage.getScene().getWindow();
                         s.close();
+
+                        FXMLLoader loader = new FXMLLoader(getClass().getResource("/fxml/start.fxml"));
+                        loader.setController(new ControllerStart(primaryStage));
+                        Parent root = null;
+                        try {
+                            root = loader.load();
+                        } catch (IOException e) {
+                            e.printStackTrace();
+                        }
+                        primaryStage.setScene(new Scene(root, 500, 500));
+                        primaryStage.setTitle("Start");
+                        primaryStage.show();
                     }
 
-                    if((pressedA || pressedS || pressedD || pressedW)) {
+                    if(choose != 0) {
                         rectangles.getChildren().add(tempRectangle);
                     }
-                    
+
                     lab.setText("X: " + tempRectangle.getX() + " Y: " + tempRectangle.getY());
 
                     if(circles.getChildren().size() == 0) {
@@ -142,13 +138,13 @@ public class Controller implements Initializable {
                         System.out.println(speed);
                         circles.getChildren().remove(0);
                     }
-                    if (pressedW) {
+                    if (choose == 3) {
                         lastY -= 10;
-                    } else if (pressedS) {
+                    } else if (choose == 1) {
                         lastY += 10;
-                    } else if (pressedD) {
+                    } else if (choose == 4) {
                         lastX += 10;
-                    } else if (pressedA) {
+                    } else if (choose == 2) {
                         lastX -= 10;
                     }
 
@@ -158,19 +154,19 @@ public class Controller implements Initializable {
                     }
 
                     if (lastX > primaryStage.getWidth() - 26) {
-                        lastX = 10;
+                        lastX = primaryStage.getMinWidth();
                     }
 
                     if (lastX < primaryStage.getMinWidth()) {
                         lastX = primaryStage.getWidth() - 26;
                     }
 
-                    if (lastY > primaryStage.getHeight()) {
-                        lastY = 10;
+                    if (lastY > primaryStage.getHeight() - 49) {
+                        lastY = primaryStage.getMinHeight();
                     }
 
-                    if (lastY < primaryStage.getMinHeight() - 26) {
-                        lastY = primaryStage.getHeight() - 26;
+                    if (lastY < primaryStage.getMinHeight()) {
+                        lastY = primaryStage.getHeight() - 49;
                     }
                 }
             }.start();

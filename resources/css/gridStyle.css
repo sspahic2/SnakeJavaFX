@@ -1,0 +1,4 @@
+.background {
+    -fx-background-image: url("/images/snakeImg.jpg");
+    -fx-background-repeat: no-repeat;
+}
